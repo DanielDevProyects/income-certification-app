@@ -268,50 +268,7 @@ def generate_pdf(data: dict, filepath: str):
 
     story = []
 
-    # ── Página 1: Manifestación ──
-    story.append(Paragraph("<u><b>MANIFESTACION DE INGRESOS</b></u>", title_s))
-    story.append(Spacer(1, 0.3 * cm))
-    story.append(Paragraph(
-        f"{data['nombre_completo']} con DNI N.º {data['dni']} C.U.I.T. N.º {data['cuit']}, "
-        f"con domicilio real en {data['domicilio']} de la ciudad de {data['ciudad']} "
-        f"provincia de {data['provincia']}.", normal))
-    story.append(Paragraph(
-        f"DECLARO: que he percibido ingresos Netos correspondientes al período comprendido entre "
-        f"los meses de {data['mes_inicio_label']} {data['anio_inicio']} hasta "
-        f"{data['mes_fin_label']} {data['anio_fin']}, que ascienden a la suma de pesos "
-        f"{numero_a_letras(data['total'])} ($ {fmt_money(data['total'])}), lo que hace un promedio "
-        f"mensual de pesos {numero_a_letras(data['promedio'])} ($ {fmt_money(data['promedio'])}). "
-        f"Dichos ingresos se conforman de la siguiente manera:", normal))
-    story.append(Paragraph("<i><u>Facturas C de Ventas (Importes Netos):</u></i>", normal))
-    story.append(Spacer(1, 0.2 * cm))
-
-    table_data = [[label, f"$ {fmt_money(monto)}"]
-                  for label, monto in zip(data["month_labels"], data["montos"])]
-    t = Table(table_data, colWidths=[13 * cm, 4 * cm])
-    t.setStyle(TableStyle([
-        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-        ("FONTSIZE", (0, 0), (-1, -1), 10),
-        ("ALIGN", (1, 0), (1, -1), "RIGHT"),
-        ("TOPPADDING", (0, 0), (-1, -1), 2),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
-        ("LINEBELOW", (0, -1), (-1, -1), 0, colors.white),
-    ]))
-    story.append(t)
-    story.append(Spacer(1, 0.2 * cm))
-    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.black))
-    story.append(Paragraph(f"<b>TOTAL $ {fmt_money(data['total'])}</b>", right_s))
-    story.append(Spacer(1, 0.5 * cm))
-    story.append(Paragraph(
-        f"A los efectos de ser presentada ante quien corresponda, se suscribe la presente en la "
-        f"ciudad de {data['ciudad']}, provincia de {data['provincia']}, a los {data['dia_emision']} "
-        f"días del mes de {data['mes_emision_label']} de {data['anio_emision_letras']}.", normal))
-    story.append(Spacer(1, 1.5 * cm))
-    story.append(Paragraph(
-        f"Firmada a efectos de su identificación con mi certificación de fecha "
-        f"{data['dia_emision']:02d}/{data['mes_emision']:02d}/{data['anio_emision']}.-", normal))
-
-    # ── Página 2: Certificación ──
-    story.append(PageBreak())
+    # ── Página 1: Certificación ──
     story.append(Paragraph("<u><b>CERTIFICACION CONTABLE SOBRE</b></u>", title_s))
     story.append(Paragraph("<u><b>MANIFESTACION DE INGRESOS PERSONALES</b></u>", title_s))
     story.append(Spacer(1, 0.3 * cm))
@@ -370,6 +327,49 @@ def generate_pdf(data: dict, filepath: str):
     story.append(Paragraph(
         f"{data['provincia']}, a los {data['dia_emision']} días del mes de "
         f"{data['mes_emision_label']} de {data['anio_emision_letras']}.", normal))
+
+    # ── Página 2: Manifestación ──
+    story.append(PageBreak())
+    story.append(Paragraph("<u><b>MANIFESTACION DE INGRESOS</b></u>", title_s))
+    story.append(Spacer(1, 0.3 * cm))
+    story.append(Paragraph(
+        f"{data['nombre_completo']} con DNI N.º {data['dni']} C.U.I.T. N.º {data['cuit']}, "
+        f"con domicilio real en {data['domicilio']} de la ciudad de {data['ciudad']} "
+        f"provincia de {data['provincia']}.", normal))
+    story.append(Paragraph(
+        f"DECLARO: que he percibido ingresos Netos correspondientes al período comprendido entre "
+        f"los meses de {data['mes_inicio_label']} {data['anio_inicio']} hasta "
+        f"{data['mes_fin_label']} {data['anio_fin']}, que ascienden a la suma de pesos "
+        f"{numero_a_letras(data['total'])} ($ {fmt_money(data['total'])}), lo que hace un promedio "
+        f"mensual de pesos {numero_a_letras(data['promedio'])} ($ {fmt_money(data['promedio'])}). "
+        f"Dichos ingresos se conforman de la siguiente manera:", normal))
+    story.append(Paragraph("<i><u>Facturas C de Ventas (Importes Netos):</u></i>", normal))
+    story.append(Spacer(1, 0.2 * cm))
+
+    table_data = [[label, f"$ {fmt_money(monto)}"]
+                  for label, monto in zip(data["month_labels"], data["montos"])]
+    t = Table(table_data, colWidths=[13 * cm, 4 * cm])
+    t.setStyle(TableStyle([
+        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+        ("FONTSIZE", (0, 0), (-1, -1), 10),
+        ("ALIGN", (1, 0), (1, -1), "RIGHT"),
+        ("TOPPADDING", (0, 0), (-1, -1), 2),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+        ("LINEBELOW", (0, -1), (-1, -1), 0, colors.white),
+    ]))
+    story.append(t)
+    story.append(Spacer(1, 0.2 * cm))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.black))
+    story.append(Paragraph(f"<b>TOTAL $ {fmt_money(data['total'])}</b>", right_s))
+    story.append(Spacer(1, 0.5 * cm))
+    story.append(Paragraph(
+        f"A los efectos de ser presentada ante quien corresponda, se suscribe la presente en la "
+        f"ciudad de {data['ciudad']}, provincia de {data['provincia']}, a los {data['dia_emision']} "
+        f"días del mes de {data['mes_emision_label']} de {data['anio_emision_letras']}.", normal))
+    story.append(Spacer(1, 1.5 * cm))
+    story.append(Paragraph(
+        f"Firmada a efectos de su identificación con mi certificación de fecha "
+        f"{data['dia_emision']:02d}/{data['mes_emision']:02d}/{data['anio_emision']}.-", normal))
 
     doc.build(story)
 
