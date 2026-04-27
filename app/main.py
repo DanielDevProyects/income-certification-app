@@ -5,7 +5,24 @@ import os
 
 from app.generator import generate_documents
 
-app = FastAPI(title="Certificación de Ingresos")
+app = FastAPI(
+    title="Income Certification App",
+    description=(
+        "API para generación automática de documentos de **Certificación Contable** "
+        "y **Manifestación de Ingresos** para contribuyentes argentinos "
+        "(Monotributistas y Responsables Inscriptos).\n\n"
+        "Los documentos se generan en formato **Word (.docx)** y **PDF** "
+        "con descarga directa desde el navegador."
+    ),
+    version="1.0.0",
+    contact={
+        "name": "Income Certification App",
+        "url": "https://github.com/DanielDevProyects/income-certification-app",
+    },
+    license_info={
+        "name": "MIT",
+    },
+)
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -27,12 +44,30 @@ YEARS_WORDS = {
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "output")
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get(
+    "/",
+    response_class=HTMLResponse,
+    summary="Formulario principal",
+    description="Devuelve el formulario HTML para ingresar los datos del contribuyente y generar los documentos.",
+    tags=["UI"],
+    include_in_schema=False,
+)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.post("/generar")
+@app.post(
+    "/generar",
+    summary="Generar documentos",
+    description=(
+        "Recibe los datos del contribuyente mediante un formulario HTML y genera:\n\n"
+        "- Un archivo **Word (.docx)** con Certificación Contable (p.1) y Manifestación de Ingresos (p.2).\n"
+        "- Un archivo **PDF** con el mismo contenido.\n\n"
+        "Retorna la página de descarga con los enlaces a ambos archivos."
+    ),
+    tags=["Documentos"],
+    include_in_schema=False,
+)
 async def generar(
     request: Request,
     # Datos del cliente
@@ -122,7 +157,19 @@ async def generar(
     })
 
 
-@app.get("/download/{filename}")
+@app.get(
+    "/download/{filename}",
+    summary="Descargar documento generado",
+    description=(
+        "Descarga un documento previamente generado (`.docx` o `.pdf`) por su nombre de archivo.\n\n"
+        "Los archivos se almacenan en el directorio `output/` del servidor."
+    ),
+    tags=["Documentos"],
+    responses={
+        200: {"description": "Archivo descargado correctamente"},
+        404: {"description": "Archivo no encontrado"},
+    },
+)
 async def download(filename: str):
     filepath = os.path.join(OUTPUT_DIR, filename)
     if not os.path.exists(filepath):
