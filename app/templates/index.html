@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generador de Certificaciones de Ingresos</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #1a202c; min-height: 100vh; }
+    header { background: #1e3a5f; color: white; padding: 1.2rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    header h1 { font-size: 1.4rem; font-weight: 700; }
+    header span { font-size: 0.9rem; opacity: 0.75; }
+    .container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.09); padding: 2rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 1rem; font-weight: 700; color: #1e3a5f; border-bottom: 2px solid #e2e8f0; padding-bottom: .6rem; margin-bottom: 1.2rem; text-transform: uppercase; letter-spacing: .05em; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .grid.full { grid-template-columns: 1fr; }
+    label { display: block; font-size: .82rem; font-weight: 600; color: #4a5568; margin-bottom: .3rem; }
+    input, select, textarea {
+      width: 100%; padding: .55rem .8rem; border: 1.5px solid #cbd5e0;
+      border-radius: 7px; font-size: .92rem; background: #f7fafc;
+      transition: border-color .2s, box-shadow .2s; outline: none;
+    }
+    input:focus, select:focus { border-color: #2b6cb0; box-shadow: 0 0 0 3px rgba(43,108,176,.12); background: #fff; }
+    .field { display: flex; flex-direction: column; }
+    .months-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+    .month-item label { font-size: .78rem; color: #718096; }
+    .month-item input { text-align: right; font-variant-numeric: tabular-nums; }
+    .hint { font-size: .73rem; color: #a0aec0; margin-top: .2rem; }
+    .btn-submit {
+      display: block; width: 100%; padding: 1rem; margin-top: 1rem;
+      background: #1e3a5f; color: white; border: none; border-radius: 9px;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .btn-submit:hover { background: #2b6cb0; }
+    .btn-submit:active { transform: scale(.98); }
+    .total-preview { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: .8rem 1rem; margin-top: 1rem; font-size: .9rem; }
+    .total-preview strong { color: #1e3a5f; }
+    @media (max-width: 600px) {
+      .grid, .grid.three { grid-template-columns: 1fr; }
+      .months-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>📄 Generador de Certificaciones de Ingresos</h1>
+    <span>Completá los datos del cliente y generá los documentos automáticamente</span>
+  </div>
+</header>
+
+<div class="container">
+  <form method="POST" action="/generar" id="certForm">
+
+    <!-- DATOS DEL CLIENTE -->
+    <div class="card">
+      <h2>👤 Datos del Cliente</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="nombre_completo">Nombre y Apellido *</label>
+          <input type="text" id="nombre_completo" name="nombre_completo" required placeholder="Ej: García Juan Carlos" />
+        </div>
+        <div class="field">
+          <label for="dni">DNI *</label>
+          <input type="text" id="dni" name="dni" required placeholder="Ej: 28.634.693" />
+        </div>
+        <div class="field">
+          <label for="cuit">C.U.I.T. *</label>
+          <input type="text" id="cuit" name="cuit" required placeholder="Ej: 27-28634693-1" />
+        </div>
+        <div class="field">
+          <label for="domicilio">Domicilio Real *</label>
+          <input type="text" id="domicilio" name="domicilio" required placeholder="Ej: Av. Independencia N.º 1.088" />
+        </div>
+        <div class="field">
+          <label for="ciudad">Ciudad *</label>
+          <input type="text" id="ciudad" name="ciudad" required placeholder="Ej: Salta" />
+        </div>
+        <div class="field">
+          <label for="provincia">Provincia *</label>
+          <input type="text" id="provincia" name="provincia" required placeholder="Ej: Salta" />
+        </div>
+      </div>
+      <div class="grid full" style="margin-top:1rem">
+        <div class="field">
+          <label for="actividad">Actividad / Rubro *</label>
+          <input type="text" id="actividad" name="actividad" required placeholder="Ej: Venta al por menor de productos de almacén" />
+        </div>
+      </div>
+      <div class="grid full" style="margin-top:1rem">
+        <div class="field">
+          <label for="tipo_contribuyente">Tipo de contribuyente *</label>
+          <select id="tipo_contribuyente" name="tipo_contribuyente" required>
+            <option value="monotributista" selected>Monotributista</option>
+            <option value="responsable_inscripto">Responsable Inscripto</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERÍODO Y FECHA -->
+    <div class="card">
+      <h2>📅 Período y Fecha de Emisión</h2>
+      <div class="grid three">
+        <div class="field">
+          <label for="mes_inicio">Mes inicio período *</label>
+          <select id="mes_inicio" name="mes_inicio" required></select>
+        </div>
+        <div class="field">
+          <label for="anio_inicio">Año inicio *</label>
+          <input type="number" id="anio_inicio" name="anio_inicio" required value="2025" min="2000" max="2100" />
+        </div>
+        <div style="display:flex;align-items:center;padding-top:1.4rem;color:#718096;font-size:.9rem">→ hasta</div>
+      </div>
+      <div class="grid three" style="margin-top:.75rem">
+        <div class="field">
+          <label for="mes_fin">Mes fin período *</label>
+          <select id="mes_fin" name="mes_fin" required></select>
+        </div>
+        <div class="field">
+          <label for="anio_fin">Año fin *</label>
+          <input type="number" id="anio_fin" name="anio_fin" required value="2026" min="2000" max="2100" />
+        </div>
+        <div></div>
+      </div>
+      <hr style="margin:1.2rem 0;border:none;border-top:1.5px solid #e2e8f0"/>
+      <div class="grid three">
+        <div class="field">
+          <label for="dia_emision">Día emisión *</label>
+          <input type="number" id="dia_emision" name="dia_emision" required value="20" min="1" max="31" />
+        </div>
+        <div class="field">
+          <label for="mes_emision">Mes emisión *</label>
+          <select id="mes_emision" name="mes_emision" required></select>
+        </div>
+        <div class="field">
+          <label for="anio_emision">Año emisión *</label>
+          <input type="number" id="anio_emision" name="anio_emision" required value="2026" min="2000" max="2100" />
+        </div>
+      </div>
+    </div>
+
+    <!-- INGRESOS MENSUALES -->
+    <div class="card">
+      <h2>💰 Ingresos Mensuales (Facturas C – Importes Netos)</h2>
+      <p class="hint" style="margin-bottom:1rem">Ingresá los montos en pesos argentinos. Usá coma para decimales. Ej: 12.506.202,00 o 12506202</p>
+      <div class="months-grid" id="monthsGrid">
+        <!-- generado por JS -->
+      </div>
+      <div class="total-preview" id="totalPreview">
+        <strong>Total: $ 0,00</strong> &nbsp;|&nbsp; Promedio mensual: $ 0,00
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit">⚙️ Generar Documentos (Word + PDF)</button>
+  </form>
+</div>
+
+<script>
+  const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+  // Populate month selects
+  ["mes_inicio","mes_fin","mes_emision"].forEach(id => {
+    const sel = document.getElementById(id);
+    MONTHS.forEach((m, i) => {
+      const opt = document.createElement("option");
+      opt.value = i + 1;
+      opt.textContent = m;
+      sel.appendChild(opt);
+    });
+  });
+  document.getElementById("mes_inicio").value = 4;   // Abril
+  document.getElementById("mes_fin").value = 3;      // Marzo
+  document.getElementById("mes_emision").value = 4;  // Abril
+
+  // Build month input grid based on period
+  function buildMonthInputs() {
+    const grid = document.getElementById("monthsGrid");
+    grid.innerHTML = "";
+    const mesIni = parseInt(document.getElementById("mes_inicio").value);
+    const anioIni = parseInt(document.getElementById("anio_inicio").value);
+    let m = mesIni, y = anioIni;
+    for (let i = 1; i <= 12; i++) {
+      const label = `${MONTHS[m-1]} ${y}`;
+      const div = document.createElement("div");
+      div.className = "month-item field";
+      div.innerHTML = `<label>${label}</label><input type="text" name="m${i}" value="0" placeholder="0,00" data-idx="${i}" />`;
+      grid.appendChild(div);
+      m++; if (m > 12) { m = 1; y++; }
+    }
+    grid.querySelectorAll("input").forEach(inp => inp.addEventListener("input", updateTotal));
+  }
+
+  function parseAmount(val) {
+    val = val.trim().replace(/\./g, "").replace(",", ".");
+    return parseFloat(val) || 0;
+  }
+
+  function fmtMoney(n) {
+    const parts = n.toFixed(2).split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return parts.join(",");
+  }
+
+  function updateTotal() {
+    const inputs = document.querySelectorAll("#monthsGrid input");
+    let total = 0;
+    inputs.forEach(inp => total += parseAmount(inp.value));
+    const promedio = total / 12;
+    document.getElementById("totalPreview").innerHTML =
+      `<strong>Total: $ ${fmtMoney(total)}</strong> &nbsp;|&nbsp; Promedio mensual: $ ${fmtMoney(promedio)}`;
+  }
+
+  ["mes_inicio","anio_inicio"].forEach(id =>
+    document.getElementById(id).addEventListener("change", buildMonthInputs)
+  );
+
+  buildMonthInputs();
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Documentos Generados</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #1a202c; min-height: 100vh; }
+    header { background: #1e3a5f; color: white; padding: 1.2rem 2rem; }
+    header h1 { font-size: 1.4rem; font-weight: 700; }
+    .container { max-width: 600px; margin: 3rem auto; padding: 0 1rem; text-align: center; }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    h2 { font-size: 1.5rem; color: #1e3a5f; margin-bottom: .5rem; }
+    p { color: #718096; margin-bottom: 2rem; }
+    .downloads { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: .7rem;
+      padding: 1rem 1.5rem; border-radius: 9px; text-decoration: none;
+      font-size: 1rem; font-weight: 700; transition: transform .1s, box-shadow .2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+    .btn-word { background: #2b5797; color: white; }
+    .btn-pdf  { background: #c53030; color: white; }
+    .btn-back { background: white; color: #1e3a5f; border: 2px solid #1e3a5f; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.09); padding: 2rem; }
+  </style>
+</head>
+<body>
+<header><h1>📄 Generador de Certificaciones de Ingresos</h1></header>
+<div class="container">
+  <div class="card">
+    <div class="success-icon">✅</div>
+    <h2>¡Documentos generados!</h2>
+    <p>Los documentos para <strong>{{ nombre }}</strong> están listos para descargar.</p>
+    <div class="downloads">
+      <a class="btn btn-word" href="/download/{{ word_file }}">
+        📝 Descargar Word (.docx – Certificación + Manifestación)
+      </a>
+      <a class="btn btn-pdf" href="/download/{{ pdf_file }}">
+        📕 Descargar PDF (Documento completo)
+      </a>
+    </div>
+    <a class="btn btn-back" href="/">← Generar otro cliente</a>
+  </div>
+</div>
+</body>
+</html>
