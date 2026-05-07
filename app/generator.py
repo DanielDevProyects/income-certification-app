@@ -56,6 +56,11 @@ def _manifestacion_table_title(data: dict) -> str:
     return "Facturas C de Ventas (Importes Netos):"
 
 
+def _tratamiento(data: dict) -> str:
+    genero = (data.get("genero") or "masculino").strip().lower()
+    return "Señora" if genero == "femenino" else "Señor"
+
+
 def _set_margins(doc, top=2, bottom=2, left=2.5, right=2.5):
     for section in doc.sections:
         section.top_margin = Cm(top)
@@ -181,7 +186,7 @@ def generate_word_certificacion(data: dict, filepath: str):
 
     # Datos cliente
     for line in [
-        f"Señora {data['nombre_completo']}",
+        f"{_tratamiento(data)} {data['nombre_completo']}",
         f"Domicilio Real: {data['domicilio']} – {data['ciudad']} – {data['provincia']}",
         f"C.U.I.T./CUIL N.º: {data['cuit']}",
         f"Actividad: {data['actividad']}",
@@ -280,7 +285,7 @@ def generate_pdf(data: dict, filepath: str):
     story.append(Paragraph("<u><b>MANIFESTACION DE INGRESOS PERSONALES</b></u>", title_s))
     story.append(Spacer(1, 0.3 * cm))
     for line in [
-        f"Señor {data['nombre_completo']}",
+        f"{_tratamiento(data)} {data['nombre_completo']}",
         f"Domicilio Real: {data['domicilio']} – {data['ciudad']} – {data['provincia']}",
         f"C.U.I.T./CUIL N.º: {data['cuit']}",
         f"Actividad: {data['actividad']}",
@@ -397,7 +402,7 @@ def generate_word_combined(data: dict, filepath: str):
 
     # Datos cliente
     for line in [
-        f"Señor {data['nombre_completo']}",
+        f"{_tratamiento(data)} {data['nombre_completo']}",
         f"Domicilio Real: {data['domicilio']} – {data['ciudad']} – {data['provincia']}",
         f"C.U.I.T./CUIL N.º: {data['cuit']}",
         f"Actividad: {data['actividad']}",

@@ -73,6 +73,7 @@ async def generar(
     # Datos del cliente
     nombre_completo: str = Form(...),
     tipo_contribuyente: str = Form("monotributista"),
+    genero: str = Form("masculino"),
     dni: str = Form(...),
     cuit: str = Form(...),
     domicilio: str = Form(...),
@@ -126,6 +127,7 @@ async def generar(
     data = {
         "nombre_completo": nombre_completo,
         "tipo_contribuyente": tipo_contribuyente,
+        "genero": genero,
         "dni": dni,
         "cuit": cuit,
         "domicilio": domicilio,

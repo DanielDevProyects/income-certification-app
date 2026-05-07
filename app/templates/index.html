@@ -90,12 +90,19 @@
           <input type="text" id="actividad" name="actividad" required placeholder="Ej: Venta al por menor de productos de almacén" />
         </div>
       </div>
-      <div class="grid full" style="margin-top:1rem">
+      <div class="grid" style="margin-top:1rem">
         <div class="field">
           <label for="tipo_contribuyente">Tipo de contribuyente *</label>
           <select id="tipo_contribuyente" name="tipo_contribuyente" required>
             <option value="monotributista" selected>Monotributista</option>
             <option value="responsable_inscripto">Responsable Inscripto</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="genero">Tratamiento *</label>
+          <select id="genero" name="genero" required>
+            <option value="masculino" selected>Masculino (Señor)</option>
+            <option value="femenino">Femenino (Señora)</option>
           </select>
         </div>
       </div>
