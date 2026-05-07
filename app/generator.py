@@ -49,6 +49,13 @@ def _tarea_realizada_items(data: dict):
     return ["• Facturas C emitidas en su condición de Monotributista."]
 
 
+def _manifestacion_table_title(data: dict) -> str:
+    tipo = (data.get("tipo_contribuyente") or "monotributista").strip().lower()
+    if tipo == "responsable_inscripto":
+        return "Ventas netas declaradas en IVA y en Actividades Económicas:"
+    return "Facturas C de Ventas (Importes Netos):"
+
+
 def _set_margins(doc, top=2, bottom=2, left=2.5, right=2.5):
     for section in doc.sections:
         section.top_margin = Cm(top)
@@ -118,7 +125,7 @@ def generate_word_manifestacion(data: dict, filepath: str):
 
     # Subtítulo
     p = _para(doc, space_after=6)
-    _add_run(p, "Facturas C de Ventas (Importes Netos):", italic=True, underline=True)
+    _add_run(p, _manifestacion_table_title(data), italic=True, underline=True)
 
     # Tabla montos sin bordes
     table = doc.add_table(rows=0, cols=2)
@@ -174,7 +181,7 @@ def generate_word_certificacion(data: dict, filepath: str):
 
     # Datos cliente
     for line in [
-        f"Señor {data['nombre_completo']}",
+        f"Señora {data['nombre_completo']}",
         f"Domicilio Real: {data['domicilio']} – {data['ciudad']} – {data['provincia']}",
         f"C.U.I.T./CUIL N.º: {data['cuit']}",
         f"Actividad: {data['actividad']}",
@@ -343,7 +350,7 @@ def generate_pdf(data: dict, filepath: str):
         f"{numero_a_letras(data['total'])} ($ {fmt_money(data['total'])}), lo que hace un promedio "
         f"mensual de pesos {numero_a_letras(data['promedio'])} ($ {fmt_money(data['promedio'])}). "
         f"Dichos ingresos se conforman de la siguiente manera:", normal))
-    story.append(Paragraph("<i><u>Facturas C de Ventas (Importes Netos):</u></i>", normal))
+    story.append(Paragraph(f"<i><u>{_manifestacion_table_title(data)}</u></i>", normal))
     story.append(Spacer(1, 0.2 * cm))
 
     table_data = [[label, f"$ {fmt_money(monto)}"]
@@ -486,7 +493,7 @@ def generate_word_combined(data: dict, filepath: str):
 
     # Subtítulo
     p = _para(doc, space_after=6)
-    _add_run(p, "Facturas C de Ventas (Importes Netos):", italic=True, underline=True)
+    _add_run(p, _manifestacion_table_title(data), italic=True, underline=True)
 
     # Tabla montos sin bordes
     table = doc.add_table(rows=0, cols=2)
